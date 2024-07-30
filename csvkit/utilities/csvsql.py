@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import os.path
 import sys
 
@@ -7,7 +6,7 @@ import agate
 import agatesql  # noqa: F401
 from sqlalchemy import create_engine, dialects
 
-from csvkit.cli import CSVKitUtility, isatty
+from csvkit.cli import CSVKitUtility, isatty, parse_list
 
 try:
     import importlib_metadata
@@ -33,6 +32,10 @@ class CSVSQL(CSVKitUtility):
         self.argparser.add_argument(
             '--db', dest='connection_string',
             help='If present, a SQLAlchemy connection string to use to directly execute generated SQL on a database.')
+        self.argparser.add_argument(
+            '--engine-option', dest='engine_option', nargs=2, action='append', default=[],
+            help="A keyword argument to SQLAlchemy's create_engine(), as a space-separated pair. "
+                 "This option can be specified multiple times. For example: thick_mode True")
         self.argparser.add_argument(
             '--query', dest='queries', action='append',
             help='Execute one or more SQL queries delimited by ";" and output the result of the last query as CSV. '
@@ -77,7 +80,8 @@ class CSVSQL(CSVKitUtility):
                  'Specify "0" to disable sniffing entirely, or "-1" to sniff the entire file.')
         self.argparser.add_argument(
             '-I', '--no-inference', dest='no_inference', action='store_true',
-            help='Disable type inference when parsing the input.')
+            help='Disable type inference (and --locale, --date-format, --datetime-format, --no-leading-zeroes) '
+                 'when parsing the input.')
         self.argparser.add_argument(
             '--chunk-size', dest='chunk_size', type=int,
             help='Chunk size for batch insert into the table. Requires --insert.')
@@ -137,7 +141,7 @@ class CSVSQL(CSVKitUtility):
         # Establish database validity before reading CSV files
         if self.args.connection_string:
             try:
-                engine = create_engine(self.args.connection_string)
+                engine = create_engine(self.args.connection_string, **parse_list(self.args.engine_option))
             except ImportError as e:
                 raise ImportError(
                     "You don't appear to have the necessary database backend installed for connection string you're "

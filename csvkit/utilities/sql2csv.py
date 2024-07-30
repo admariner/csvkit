@@ -1,27 +1,14 @@
 #!/usr/bin/env python
-import ast
-
 import agate
 from sqlalchemy import create_engine
 
-from csvkit.cli import CSVKitUtility
-
-
-def parse_list(pairs):
-    options = {}
-    for key, value in pairs:
-        try:
-            value = ast.literal_eval(value)
-        except ValueError:
-            pass
-        options[key] = value
-    return options
+from csvkit.cli import CSVKitUtility, parse_list
 
 
 class SQL2CSV(CSVKitUtility):
     description = 'Execute a SQL query on a database and output the result to a CSV file.'
     # Overrides all flags except --linenumbers, --verbose, --version.
-    override_flags = 'f,b,d,e,H,K,L,p,q,S,t,u,z,blanks,date-format,datetime-format,zero'.split(',')
+    override_flags = ['f', 'b', 'd', 'e', 'H', 'I', 'K', 'L', 'p', 'q', 'S', 't', 'u', 'z', 'zero']
 
     def add_arguments(self):
         self.argparser.add_argument(
