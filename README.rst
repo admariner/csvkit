@@ -2,8 +2,8 @@
     :target: https://github.com/wireservice/csvkit/actions
     :alt: Build status
 
-.. image:: https://coveralls.io/repos/wireservice/csvkit/badge.svg?branch=master
-    :target: https://coveralls.io/r/wireservice/csvkit
+.. image:: https://codecov.io/github/wireservice/csvkit/graph/badge.svg
+    :target: https://codecov.io/github/wireservice/csvkit
     :alt: Coverage status
 
 .. image:: https://img.shields.io/pypi/dm/csvkit.svg
